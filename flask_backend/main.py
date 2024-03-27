@@ -51,14 +51,6 @@ class User(db.Model):
         return check_password_hash(self.password_hash, password)
 
 
-# This decorator will run the function once before the first request to the server
-# db.create_all() will create the database tables based on the models, if they don't already exist
-# if they already exist, it will not recreate them and will not modify them
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
-
 
 # --------- API Endpoints ---------
 
@@ -149,4 +141,9 @@ def save_resources():
 
 
 if __name__ == '__main__':
+    # db.create_all() will create the database tables based on the models, if these tables don't already exist
+    # if they already exist, it will not recreate them and will not modify them
+    with app.app_context():
+        db.create_all()
+
     app.run(debug=True)
