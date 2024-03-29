@@ -29,7 +29,7 @@ jwt = JWTManager(app)
 
 
 # Currently planning to store community resources in a JSON file
-with open('resources.json', 'r') as file:
+with open('dataset.json', 'r') as file:
     resources = json.load(file)
 
 

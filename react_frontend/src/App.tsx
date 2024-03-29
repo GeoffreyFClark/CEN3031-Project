@@ -5,6 +5,8 @@ import './App.css';
 import ResourceList from './ResourceList';
 import AddResource from './AddResource';
 import Navigation from './Navigation';
+import Register from './Register';
+import Login from './Login';
 
 function App() {
 
@@ -16,12 +18,10 @@ function App() {
       <Routes>
         <Route path="/" element={<ResourceList />} />
         <Route path="/add-resource" element={<AddResource />} />
-        {/* Define other routes here */}
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
-
-      
     </div>
-
   );
 }
 
