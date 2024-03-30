@@ -6,6 +6,11 @@ from flask_sqlalchemy import SQLAlchemy  # When using VSCode I had an issue with
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 from werkzeug.security import generate_password_hash, check_password_hash
 
+#Local imports
+from search import search_resources
+
+FILE_PATH = 'dataset.json'
+global resources
 
 # Initialize the Flask app
 app = Flask(__name__)
@@ -26,11 +31,6 @@ db = SQLAlchemy(app)
 # Configuration of JWT (JSON Web Tokens) for user authentication
 app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')  
 jwt = JWTManager(app)
-
-
-# Currently planning to store community resources in a JSON file
-with open('dataset.json', 'r') as file:
-    resources = json.load(file)
 
 
 
@@ -131,13 +131,41 @@ def delete_resource(resource_id):
 
 
 
+@app.route('/api/search', methods=['POST'])
+def search():
+    criteria = request.json
+    print("Flask | Initiating search type:", criteria)
+    
+    resources_response = get_resources() 
+    
+    results = search_resources(resources_response.json, criteria)
+    print("Flask | Search results:", results)
+    
+    return jsonify(results)
+
+
+
+
+
+
 # --------- Helper Functions ---------
 
 
 # Save the resources to the JSON file
 def save_resources():
-    with open('resources.json', 'w') as file:
+    with open(FILE_PATH, 'w') as file:
         json.dump(resources, file, indent=2)
+
+def load_resources(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        print("File not found. Please check the file path.")
+    except json.JSONDecodeError:
+        print("Error decoding JSON. Please check the file content.")
+    return None
+
 
 
 if __name__ == '__main__':
@@ -146,4 +174,9 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
 
+
+    resources = load_resources(FILE_PATH)
+
+
     app.run(debug=True)
+    
