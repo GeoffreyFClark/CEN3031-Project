@@ -1,20 +1,28 @@
 import React, { useState } from 'react';
-import { Container, Typography, Card, CardContent, CardActions, Button, TextField } from '@mui/material';
+import { Container, Typography, Card, CardContent, CardActions, Button, TextField, Select, MenuItem, Grid, FormHelperText } from '@mui/material';
+import ResourceCard from './ResourceCard';
+
 
 const ResourceList = () => {
   const [resources, setResources] = useState([]);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [category, setCategory] = useState('All');
+  const [radius, setRadius] = useState(0);
 
   const fetchResources = (zip) => {
-    console.log(`Searching for zip code: ${zip}`);
+    console.log(`Searching for zip code: ${zip}, category: ${category}, and radius: ${radius}`);
     const url = 'http://localhost:5000/api/search';
     const options = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ zip: zip }), // Send the zip code under the 'zip' key
+      body: JSON.stringify({ 
+        zip: zip, 
+        category: category === 'All' ? 'none' : category,
+        radius: radius
+      }),
     };
 
     fetch(url, options)
@@ -41,9 +49,10 @@ const ResourceList = () => {
       setError('Please enter a search query');
       return;
     }
-    console.log("Search query submitted:", searchQuery);
-    fetchResources(searchQuery);
+    console.log("Search query submitted:", searchQuery, "Category:", category, "Radius:", radius);
+    fetchResources(searchQuery, category, radius);
   };
+  
 
   if (error) {
     return (
@@ -57,49 +66,76 @@ const ResourceList = () => {
 
   return (
     <Container maxWidth="sm">
-      <Typography variant="h4" component="h2" gutterBottom>
-        Search Community Resources by Zip Code
+      <Typography variant="h4" component="h2" align="center" gutterBottom>
+        Search Community Resources
       </Typography>
-      <TextField
-        fullWidth
-        label="Enter Zip Code"
-        variant="outlined"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        margin="normal"
-        onKeyPress={(e) => {
-          if (e.key === 'Enter') handleSearch();
-        }}
-      />
-      <Button variant="contained" onClick={handleSearch} sx={{ mb: 2 }}>
-        Search
-      </Button>
+      <Grid container spacing={2} alignItems="center">
+        <Grid item xs={4}>
+          <FormHelperText>Type</FormHelperText>
+          <Select
+            fullWidth
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Without label' }}
+            variant="outlined"
+            sx={{ mt: 1, mb: 1 }}
+          >
+            <MenuItem value="All">All</MenuItem>
+            <MenuItem value="Food Bank">Food Bank</MenuItem>
+            <MenuItem value="Animal">Animal</MenuItem>
+            <MenuItem value="Substance Abuse">Substance Abuse</MenuItem>
+            <MenuItem value="Veteran">Veteran</MenuItem>
+          </Select>
+        </Grid>
+        <Grid item xs={4}>
+        <FormHelperText> </FormHelperText>
+          <TextField
+            fullWidth
+            label="Enter Zip Code"
+            variant="outlined"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            sx={{ mt: 1, mb: 1 }}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <FormHelperText>In Radius</FormHelperText>
+          <Select
+            fullWidth
+            value={radius}
+            onChange={(e) => setRadius(e.target.value)}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Without label' }}
+            variant="outlined"
+            sx={{ mt: 1, mb: 1 }}
+          >
+            <MenuItem value={0}>0 miles</MenuItem>
+            <MenuItem value={10}>10 miles</MenuItem>
+            <MenuItem value={25}>25 miles</MenuItem>
+            <MenuItem value={50}>50 miles</MenuItem>
+            <MenuItem value={100}>100 miles</MenuItem>
+          </Select>
+        </Grid>
+        <Grid item xs={12}>
+          <Button
+            variant="contained"
+            onClick={handleSearch}
+            fullWidth
+            sx={{ mt: 2, mb: 2 }}
+          >
+            Search
+          </Button>
+        </Grid>
+      </Grid>
+      {error && (
+        <Typography color="error" gutterBottom>
+          {error}
+        </Typography>
+      )}
 
       {resources.map((resource, index) => (
-        <Card key={index} sx={{ mb: 2 }}>
-          <CardContent>
-            <Typography variant="h5" component="div">
-              {resource.name}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {resource.description}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Address: {resource.address.streetAddress}, {resource.address.addressLocality}, {resource.address.addressRegion} {resource.address.postalCode}, {resource.address.addressCountry}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Phone: {resource.phone}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Email: {resource.email}
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small" href={resource.url} target="_blank">
-              Learn More
-            </Button>
-          </CardActions>
-        </Card>
+        <ResourceCard key={index} resource={resource} />
       ))}
     </Container>
   );
