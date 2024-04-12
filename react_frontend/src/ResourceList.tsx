@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Container, Typography, Card, CardContent, CardActions, Button, TextField, Select, MenuItem, Grid, FormHelperText } from '@mui/material';
+import { Container, Typography, Card, CardContent, CardActions, Button, TextField, Select, MenuItem, Grid, FormHelperText, CircularProgress, Box } from '@mui/material';
 import ResourceCard from './ResourceCard';
-
 
 const ResourceList = () => {
   const [resources, setResources] = useState([]);
@@ -9,8 +8,11 @@ const ResourceList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [category, setCategory] = useState('All');
   const [radius, setRadius] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const fetchResources = (zip) => {
+    setIsLoading(true); // Set isLoading to true before fetch
     console.log(`Searching for zip code: ${zip}, category: ${category}, and radius: ${radius}`);
     const url = 'http://localhost:5000/api/search';
     const options = {
@@ -29,17 +31,15 @@ const ResourceList = () => {
       .then(response => response.json())
       .then(data => {
         console.log("Search results:", data);
-        if (Array.isArray(data)) {
-          setResources(data);
-        } else {
-          // Handle unexpected data format gracefully
-          setResources([]); // Clear previous results or set to a default state
-          setError('Unexpected data format');
-        }
+        setResources(Array.isArray(data) ? data : []); // Set resources to the data or an empty array
+        setError(null); // Clear previous errors
       })
       .catch(error => {
         setError(`Error fetching resources: ${error}`);
         console.error('Error:', error);
+      })
+      .finally(() => {
+        setIsLoading(false); // Set isLoading to false after fetch completes
       });
   };
 
@@ -50,9 +50,9 @@ const ResourceList = () => {
       return;
     }
     console.log("Search query submitted:", searchQuery, "Category:", category, "Radius:", radius);
+    setHasSearched(true);
     fetchResources(searchQuery, category, radius);
   };
-  
 
   if (error) {
     return (
@@ -128,15 +128,19 @@ const ResourceList = () => {
           </Button>
         </Grid>
       </Grid>
-      {error && (
-        <Typography color="error" gutterBottom>
-          {error}
+      {isLoading ? (
+        <Box display="flex" justifyContent="center" alignItems="center" mt={4}>
+          <CircularProgress />
+        </Box>
+      ) : hasSearched && resources.length === 0 ? (
+        <Typography variant="h6" align="center" gutterBottom>
+          No results found
         </Typography>
+      ) : (
+        resources.map((resource, index) => (
+          <ResourceCard key={index} resource={resource} />
+        ))
       )}
-
-      {resources.map((resource, index) => (
-        <ResourceCard key={index} resource={resource} />
-      ))}
     </Container>
   );
 };

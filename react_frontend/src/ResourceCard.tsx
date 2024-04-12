@@ -1,37 +1,42 @@
 import React from 'react';
-import { Card, CardContent, CardActions, Button, Typography, Grid, Divider } from '@mui/material';
+import { Card, CardContent, CardActions, Button, Typography, Grid, Divider, Avatar, Box } from '@mui/material';
 import { LocationOn, Phone, Email } from '@mui/icons-material';
 
 const ResourceCard = ({ resource }) => {
-
-
-const formatDescription = (description) => {
+  const formatDescription = (description) => {
     if (description.startsWith('"') && description.endsWith('"')) {
-        return description;
+      return description;
     }
     return `"${description}"`;
-    };
-    
+  };
+
   return (
     <Card sx={{ mb: 2, p: 2 }}>
-      <CardContent>
-        <Typography variant="h6" component="div" gutterBottom>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <Avatar
+          alt={resource.name}
+          src={resource.image}
+          sx={{ width: 56, height: 56, mr: 2 }}
+        />
+        <Typography variant="h6" component="div">
           {resource.name}
         </Typography>
+      </Box>
+      <CardContent>
         <Typography variant="subtitle1" color="text.secondary" gutterBottom>
           {formatDescription(resource.description)}
         </Typography>
         <Divider sx={{ my: 2 }} />
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
-          <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'flex-start' }}>
-            <LocationOn sx={{ mr: 1, mt: '2px' }} />
-            <span>
-              {resource.address.streetAddress}, {resource.address.addressLocality},{' '}
-              {resource.address.addressRegion} {resource.address.postalCode},{' '}
-              {resource.address.addressCountry}
-            </span>
-          </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'flex-start' }}>
+              <LocationOn sx={{ mr: 1, mt: '2px' }} />
+              <span>
+                {resource.address.streetAddress}, {resource.address.addressLocality},{' '}
+                {resource.address.addressRegion} {resource.address.postalCode},{' '}
+                {resource.address.addressCountry}
+              </span>
+            </Typography>
           </Grid>
           <Grid item xs={12} sm={6}>
             <Typography variant="body2" color="text.secondary">
@@ -53,4 +58,5 @@ const formatDescription = (description) => {
     </Card>
   );
 };
+
 export default ResourceCard;
