@@ -31,3 +31,14 @@ def search_resources(resources, criteria):
                 matching_resources.append(resource)
 
     return matching_resources
+
+def search_by_id(resources, ids):
+    found_resources = []
+    
+    for category in resources.values():
+        for resource in category:
+            if resource['id'] in ids:
+                found_resources.append(resource)
+    
+    return found_resources
+
