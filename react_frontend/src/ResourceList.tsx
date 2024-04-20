@@ -89,10 +89,9 @@ const ResourceList = () => {
           </Select>
         </Grid>
         <Grid item xs={4}>
-        <FormHelperText> </FormHelperText>
+        <FormHelperText>Enter Zip Code</FormHelperText>
           <TextField
             fullWidth
-            label="Enter Zip Code"
             variant="outlined"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

@@ -23,6 +23,12 @@ function Navigation() {
     setAnchorEl(null);
   };
 
+  const buttonHoverStyle = {
+    '&:hover': {
+      bgcolor: 'rgba(255, 255, 255, 0.2)'
+    }
+  };
+
   return (
     <AppBar position="static">
       <Toolbar>
@@ -32,15 +38,15 @@ function Navigation() {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           CommuniCare
         </Typography>
-        <Button color="inherit" component={Link} to="/">
+        <Button color="inherit" component={Link} to="/" sx={buttonHoverStyle}>
           Home
         </Button>
         {username && (
           <>
-            <Button color="inherit" component={Link} to="/my-resources">
+            <Button color="inherit" component={Link} to="/my-resources" sx={buttonHoverStyle}>
               My Resources
             </Button>
-            <Button color="inherit" component={Link} to="/add-resource">
+            <Button color="inherit" component={Link} to="/add-resource" sx={buttonHoverStyle}>
               Add Resource
             </Button>
           </>
@@ -52,6 +58,7 @@ function Navigation() {
               aria-controls="user-menu"
               aria-haspopup="true"
               onClick={handleMenuOpen}
+              sx={buttonHoverStyle}
             >
               {username}
             </Button>
@@ -77,10 +84,10 @@ function Navigation() {
           </Box>
         ) : (
           <>
-            <Button color="inherit" component={Link} to="/login">
+            <Button color="inherit" component={Link} to="/login" sx={buttonHoverStyle}>
               Login
             </Button>
-            <Button color="inherit" component={Link} to="/register">
+            <Button color="inherit" component={Link} to="/register" sx={buttonHoverStyle}>
               Register
             </Button>
           </>
