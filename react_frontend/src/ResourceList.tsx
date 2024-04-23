@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Typography, Card, CardContent, CardActions, Button, TextField, Select, MenuItem, Grid, FormHelperText, CircularProgress, Box } from '@mui/material';
+import { Container, Typography, Button, TextField, Select, MenuItem, Grid, FormHelperText, CircularProgress, Box } from '@mui/material';
 import ResourceCard from './ResourceCard';
 
 const ResourceList = () => {
