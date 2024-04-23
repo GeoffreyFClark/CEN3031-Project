@@ -69,6 +69,11 @@ function Navigation() {
           }}
         >
           <MenuItem component={Link} to="/" onClick={handleNavMenuClose}>Home</MenuItem>
+          <MenuItem onClick={() => {
+              handleNavMenuClose();
+              handleContactClick();
+            }}>Contact Us
+          </MenuItem>
           {username && (
             <>
               <MenuItem component={Link} to="/my-resources" onClick={handleNavMenuClose}>My Resources</MenuItem>
