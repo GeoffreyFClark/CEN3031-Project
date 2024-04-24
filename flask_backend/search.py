@@ -21,15 +21,9 @@ def search_resources(resources, criteria):
         print(f"Searching for resources with ZIP code: {zip_query}")
 
     for resource_type, resource_list in resources.items():
-        if category_query != 'none' and resource_type != category_query:
-            continue
-
         for resource in resource_list:
-            if zip_query and resource["address"]["postalCode"] in zip_codes:
+            if (zip_query and resource["address"]["postalCode"] in zip_codes) or not zip_query:
                 matching_resources.append(resource)
-            elif not zip_query:
-                matching_resources.append(resource)
-
     return matching_resources
 
 def search_by_id(resources, ids):

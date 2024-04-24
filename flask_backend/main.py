@@ -12,6 +12,7 @@ from search import search_resources, search_by_id
 
 DATASET_PATH = 'dataset.json'
 ID_PATH = 'id.json'
+USER_NOT_FOUND_MESSAGE = {"error": "User not found"}  # To satisfy SonarCloud test 
 
 global resources
 global current_id
@@ -40,6 +41,9 @@ user_resources = db.Table('user_resources',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('resource_id', db.Integer, db.ForeignKey('resource.id'), primary_key=True)
 )
+
+
+
 # ---------------------------------------- Database Models --------------------------------------
 
 class User(db.Model):
@@ -137,7 +141,7 @@ def add_resource():
         current_user_username = get_jwt_identity()
         user = User.query.filter_by(username=current_user_username).first()
         if not user:
-            return jsonify({"error": "User not found"}), 404
+            return jsonify(USER_NOT_FOUND_MESSAGE), 404
 
         resource = Resource(id=resource_data['id'])
         user.resources.append(resource)
@@ -156,7 +160,7 @@ def get_my_resources():
     current_user_username = get_jwt_identity()
     user = User.query.filter_by(username=current_user_username).first()
     if not user:
-        return jsonify({"error": "User not found"}), 404
+        return jsonify(USER_NOT_FOUND_MESSAGE), 404
 
     resources_response = get_resources() 
     user_resource_ids = user.get_resource_ids()
@@ -191,7 +195,7 @@ def delete_resource(resource_id):
     user = User.query.filter_by(username=current_user_username).first()
 
     if not user:
-        return jsonify({"error": "User not found"}), 404
+        return jsonify(USER_NOT_FOUND_MESSAGE), 404
 
     resource = Resource.query.filter_by(id=resource_id).first()
 
@@ -241,6 +245,11 @@ def save_resources():
     except Exception as e:
         print(f"Failed to save resources or current ID: {e}")
 
+def reinitialize_resources():
+    global resources, current_id
+    resources = {"Food bank": [], "Animal": [], "Veteran": [], "Substance abuse": []}
+    current_id = 1
+
 def load_resources():
     global resources, current_id
     try:
@@ -254,18 +263,15 @@ def load_resources():
         print("Resources and current_id loaded successfully.")
     except FileNotFoundError:
         print(f"Files not found. Working directory: {os.getcwd()}")
-        resources = {"Food bank": [], "Animal": [], "Veteran": [], "Substance abuse": []}
-        current_id = 1
+        reinitialize_resources()
         save_resources()  # To create initial files and avoid further load errors
     except json.JSONDecodeError:
         print("JSON decode error. Reinitializing structures.")
-        resources = {"Food bank": [], "Animal": [], "Veteran": [], "Substance abuse": []}
-        current_id = 1
+        reinitialize_resources()
         save_resources()
     except Exception as e:
         print(f"An unexpected error occurred while loading resources: {e}")
-        resources = {"Food bank": [], "Animal": [], "Veteran": [], "Substance abuse": []}
-        current_id = 1
+        reinitialize_resources()
         save_resources()
 
 

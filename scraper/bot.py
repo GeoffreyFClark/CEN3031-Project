@@ -18,10 +18,8 @@ def setup_logging(logs_folder):
         os.makedirs(logs_folder)
 
     currentDate = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    logFilePath = os.path.join(logs_folder, f"Scraper-{currentDate}.log")
-
     logging.basicConfig(
-        filename=logFilePath,
+        filename = os.path.join(logs_folder, f"Scraper-{currentDate}.log"),
         level=logging.INFO,
         format='[%(asctime)s] %(message)s',
         datefmt='%I:%M:%S %p'
@@ -84,17 +82,14 @@ async def main():
                     await asyncio.sleep(1)
                     link_data = {}
                     orgname = await driver.find_element(By.CSS_SELECTOR, 'h1[itemprop="name"]')
-                    orgname = await orgname.get_property("textContent")
-                    orgname = orgname.capitalize()
+                    orgname = await orgname.get_property("textContent").capitalize()
                     link_data['name'] = orgname
                     log(f"Got name: {orgname}")
 
                     description = await driver.find_element(By.CSS_SELECTOR, 'div[itemprop="description"]')
                     ptags = await description.find_elements(By.TAG_NAME, 'p')
                     descriptionTag = ptags[1]
-                    description = await descriptionTag.get_property("textContent")
-                    description = description.replace('Mission:', '')
-                    description = description.strip()
+                    description = await descriptionTag.get_property("textContent").replace('Mission:', '').strip()
 
                     link_data['description'] = description
                     log(f"Got description: {description}")
@@ -133,24 +128,19 @@ async def main():
                         address = spans[1]
                         
                         streetAddress = await address.find_element(By.CSS_SELECTOR, 'span[itemprop="streetAddress"]')
-                        streetAddressText = await streetAddress.get_property("innerText")
-                        address_data['streetAddress'] = streetAddressText.strip()
+                        address_data['streetAddress'] = await streetAddress.get_property("innerText").strip()
                         
                         addressLocality = await address.find_element(By.CSS_SELECTOR, 'span[itemprop="addressLocality"]')
-                        addressLocalityText = await addressLocality.get_property("innerText")
-                        address_data['addressLocality'] = addressLocalityText.strip()
+                        address_data['addressLocality'] = await addressLocality.get_property("innerText").strip()
                         
                         addressRegion = await address.find_element(By.CSS_SELECTOR, 'span[itemprop="addressRegion"]')
-                        addressRegionText = await addressRegion.get_property("innerText")
-                        address_data['addressRegion'] = addressRegionText.strip()
+                        address_data['addressRegion'] = await addressRegion.get_property("innerText").strip()
                         
                         postalCode = await address.find_element(By.CSS_SELECTOR, 'span[itemprop="postalCode"]')
-                        postalCodeText = await postalCode.get_property("innerText")
-                        address_data['postalCode'] = postalCodeText.strip()
+                        address_data['postalCode'] = await postalCode.get_property("innerText").strip()
                         
                         addressCountry = await address.find_element(By.CSS_SELECTOR, 'span[itemprop="addressCountry"]')
-                        addressCountryText = await addressCountry.get_property("innerText")
-                        address_data['addressCountry'] = addressCountryText.strip()
+                        address_data['addressCountry'] = await addressCountry.get_property("innerText").strip()
                         
                         link_data['address'] = address_data
                         log(f"Got address: {address_data}")
